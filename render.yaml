@@ -8,7 +8,9 @@ services:
     runtime: node
     plan: starter # ~$7/mo; needed for a persistent disk (free tier has none)
     region: ohio
-    buildCommand: npm install && npm run build
+    # NODE_ENV=production (set below) makes npm skip devDependencies, but the
+    # build needs them (vite, esbuild, tailwind). --include=dev forces them in.
+    buildCommand: npm ci --include=dev && npm run build
     startCommand: npm start
     healthCheckPath: /
     autoDeploy: true
