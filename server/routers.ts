@@ -1,12 +1,17 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { nanoid } from "nanoid";
-import { COOKIE_NAME } from "@shared/const";
+import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { notifyOwner } from "./_core/notification";
+import { signSession } from "./_core/session";
+import { hashPassword, verifyPassword } from "./_core/password";
 import {
+  getUserByEmail,
+  createUser,
+  touchUserSignIn,
   getAllApplicationsForAdminAll,
   getApplicationById,
   getApplicationByUserId,
@@ -38,6 +43,13 @@ const DEADLINE_UTC = new Date("2026-08-01T04:59:00.000Z"); // July 31 11:59 PM C
 
 function isDeadlinePassed(): boolean {
   return new Date() > DEADLINE_UTC;
+}
+
+// ─── Client-safe user projection ──────────────────────────────────────────────
+// Never send passwordHash (or other secrets) to the browser.
+function publicUser<T extends { passwordHash?: unknown }>(user: T) {
+  const { passwordHash: _omit, ...rest } = user;
+  return rest;
 }
 
 // ─── Admin guard ──────────────────────────────────────────────────────────────
@@ -263,7 +275,8 @@ const applicationRouter = router({
 const adminRouter = router({
   // List all applications
   listApplications: adminProcedure.query(async () => {
-    return getAllApplicationsForAdminAll();
+    const rows = await getAllApplicationsForAdminAll();
+    return rows.map((r) => ({ ...r, user: publicUser(r.user) }));
   }),
 
   // Get full application detail
@@ -335,7 +348,8 @@ const adminRouter = router({
 
   // Ranked leaderboard
   leaderboard: adminProcedure.query(async () => {
-    return getApplicationsRanked();
+    const ranked = await getApplicationsRanked();
+    return ranked.map((r) => ({ ...r, user: publicUser(r.user) }));
   }),
 });
 
@@ -458,7 +472,60 @@ const evaluatorRouter = router({
 export const appRouter = router({
   system: systemRouter,
   auth: router({
-    me: publicProcedure.query((opts) => opts.ctx.user),
+    me: publicProcedure.query((opts) => (opts.ctx.user ? publicUser(opts.ctx.user) : null)),
+
+    // Register a new applicant account (email + password) and sign in.
+    register: publicProcedure
+      .input(
+        z.object({
+          email: z.string().email(),
+          password: z.string().min(8, "Password must be at least 8 characters"),
+          name: z.string().min(1).max(200),
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
+        const email = input.email.trim().toLowerCase();
+        const existing = await getUserByEmail(email);
+        if (existing) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "An account with this email already exists. Please sign in.",
+          });
+        }
+        const passwordHash = await hashPassword(input.password);
+        const user = await createUser({
+          openId: `local:${nanoid(16)}`,
+          email,
+          name: input.name.trim(),
+          passwordHash,
+          role: "user",
+        });
+        const token = await signSession(user.id);
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+        return { success: true } as const;
+      }),
+
+    // Sign in with email + password.
+    login: publicProcedure
+      .input(z.object({ email: z.string().email(), password: z.string().min(1) }))
+      .mutation(async ({ ctx, input }) => {
+        const email = input.email.trim().toLowerCase();
+        const user = await getUserByEmail(email);
+        const ok = user && (await verifyPassword(input.password, user.passwordHash));
+        if (!user || !ok) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Incorrect email or password.",
+          });
+        }
+        await touchUserSignIn(user.id);
+        const token = await signSession(user.id);
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+        return { success: true, role: user.role } as const;
+      }),
+
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });

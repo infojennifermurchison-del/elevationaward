@@ -5,6 +5,7 @@ import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
 import Apply from "./pages/Apply";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminApplicationDetail from "./pages/AdminApplicationDetail";
@@ -38,6 +39,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/login" component={Login} />
       <Route path="/apply" component={Apply} />
       <Route path="/apply/confirmation" component={ApplicationConfirmation} />
       <Route path="/admin" component={AdminDashboard} />

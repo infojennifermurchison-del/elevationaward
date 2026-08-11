@@ -435,7 +435,7 @@ export default function Home() {
                   </p>
                   <div className="mt-4 flex items-center gap-3">
                     <img
-                      src="/manus-storage/jennifer-murchison-brand_abaf13e3.png"
+                      src="/jennifer-murchison.svg"
                       alt="Jennifer Murchison, Principal Consultant of The Murchison Consulting Group, LLC"
                       className="w-8 h-8 rounded-full object-cover object-top flex-shrink-0"
                     />
@@ -547,7 +547,7 @@ export default function Home() {
               <div className="bg-white p-8">
                 <div className="flex items-start gap-6">
                   <img
-                    src="/manus-storage/jennifer-murchison-brand_abaf13e3.png"
+                    src="/jennifer-murchison.svg"
                     alt="Jennifer Murchison, Principal Consultant of The Murchison Consulting Group, LLC — wearing a deep navy blazer with a champagne gold blouse, smiling confidently in a professional headshot"
                     className="w-24 h-24 rounded-2xl object-cover object-top flex-shrink-0 shadow-md"
                   />
