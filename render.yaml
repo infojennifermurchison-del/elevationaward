@@ -1,0 +1,29 @@
+# Render Blueprint — one-click deploy for the RISEhigHER Elevation Award app.
+# In Render: New + → "Blueprint" → connect this repo. Render reads this file,
+# creates the web service and a persistent disk, and asks you for the two
+# secret values below (ADMIN_EMAIL / ADMIN_PASSWORD). See DEPLOY.md.
+services:
+  - type: web
+    name: elevation-award
+    runtime: node
+    plan: starter # ~$7/mo; needed for a persistent disk (free tier has none)
+    region: ohio
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /data # the app writes app.db + uploads/ here
+      - key: SESSION_SECRET
+        generateValue: true # Render generates a strong random secret
+      - key: ADMIN_EMAIL
+        sync: false # you enter this in the Render dashboard
+      - key: ADMIN_PASSWORD
+        sync: false # you enter this in the Render dashboard
+    disk:
+      name: data
+      mountPath: /data # persistent — survives restarts and redeploys
+      sizeGB: 1
