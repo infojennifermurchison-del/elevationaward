@@ -31,35 +31,44 @@ export function registerRestoreRoute(app: Express) {
         return;
       }
 
+      const stamp = Date.now();
+      const tmp = path.join(ENV.dataDir, `.restore-${stamp}.tar.gz`);
+      const work = path.join(ENV.dataDir, `.restore-work-${stamp}`);
       try {
         fs.mkdirSync(ENV.dataDir, { recursive: true });
-        const tmp = path.join(ENV.dataDir, `.restore-${Date.now()}.tar.gz`);
         fs.writeFileSync(tmp, body);
+        fs.mkdirSync(work, { recursive: true });
 
-        // GNU tar strips leading "/" and refuses ".." members, so extracting a
-        // trusted admin-provided archive into the data dir is safe.
-        const result = spawnSync("tar", ["-xzf", tmp, "-C", ENV.dataDir], {
-          encoding: "utf8",
-        });
-        fs.rmSync(tmp, { force: true });
-
+        // Extract into a work dir the app owns (never the mount point itself,
+        // whose permissions the platform may forbid us to change). GNU tar
+        // strips leading "/" and refuses ".." members, so this is safe.
+        const result = spawnSync(
+          "tar",
+          ["-xzf", tmp, "-C", work, "--no-same-owner"],
+          { encoding: "utf8" },
+        );
         if (result.status !== 0) {
-          res.status(500).json({
-            error: `Extract failed: ${result.stderr || `tar exit ${result.status}`}`,
-          });
-          return;
+          throw new Error(result.stderr || `tar exit ${result.status}`);
         }
 
-        // Remove stale WAL side-files so the restored db opens cleanly on boot.
-        for (const f of ["app.db-wal", "app.db-shm"]) {
+        // Move each restored top-level entry into the data dir, replacing.
+        for (const entry of fs.readdirSync(work)) {
+          const dest = path.join(ENV.dataDir, entry);
+          fs.rmSync(dest, { recursive: true, force: true });
+          fs.renameSync(path.join(work, entry), dest);
+        }
+        // Drop any stale journal side-files so the db opens clean on boot.
+        for (const f of ["app.db-wal", "app.db-shm", "app.db-journal"]) {
           fs.rmSync(path.join(ENV.dataDir, f), { force: true });
         }
 
         res.json({ success: true, restarting: true });
-        // Exit so the platform restarts us against the restored database.
         setTimeout(() => process.exit(0), 750);
       } catch (err) {
-        res.status(500).json({ error: String(err) });
+        res.status(500).json({ error: `Extract failed: ${String(err)}` });
+      } finally {
+        fs.rmSync(tmp, { force: true });
+        fs.rmSync(work, { recursive: true, force: true });
       }
     },
   );

@@ -37,7 +37,10 @@ export function getRawDb(): Database.Database {
   if (!_sqlite) {
     fs.mkdirSync(path.dirname(ENV.databaseFile), { recursive: true });
     _sqlite = new Database(ENV.databaseFile);
-    _sqlite.pragma("journal_mode = WAL");
+    // DELETE journal (not WAL) keeps the whole database in the single app.db
+    // file — no -wal/-shm side files — so backup and restore are just that one
+    // file. At this scale WAL's concurrency benefit is irrelevant.
+    _sqlite.pragma("journal_mode = DELETE");
     _sqlite.pragma("foreign_keys = ON");
   }
   return _sqlite;
