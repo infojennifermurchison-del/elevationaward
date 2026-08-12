@@ -6,6 +6,7 @@ import fs from "node:fs";
 import { parse as parseCookieHeader } from "cookie";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerFileRoutes } from "./files";
+import { registerRestoreRoute } from "./restore";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
@@ -83,6 +84,7 @@ async function startServer() {
   app.use(cookieMiddleware);
 
   registerFileRoutes(app);
+  registerRestoreRoute(app);
 
   app.use(
     "/api/trpc",

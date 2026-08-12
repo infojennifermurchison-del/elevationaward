@@ -10,6 +10,7 @@ import Apply from "./pages/Apply";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminApplicationDetail from "./pages/AdminApplicationDetail";
 import AdminEvaluators from "./pages/AdminEvaluators";
+import AdminRestore from "./pages/AdminRestore";
 import ApplicationConfirmation from "./pages/ApplicationConfirmation";
 import EvaluatorAccept from "./pages/EvaluatorAccept";
 import EvaluatorPortal from "./pages/EvaluatorPortal";
@@ -45,6 +46,7 @@ function Router() {
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin/application/:id" component={AdminApplicationDetail} />
       <Route path="/admin/evaluators" component={AdminEvaluators} />
+      <Route path="/admin/restore" component={AdminRestore} />
       <Route path="/evaluator/accept" component={EvaluatorAccept} />
       <Route path="/evaluator" component={EvaluatorPortal} />
       <Route path="/evaluator/score/:id" component={EvaluatorScore} />
