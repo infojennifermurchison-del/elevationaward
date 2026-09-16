@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="RISEhigHER Elevation Award">
+  <defs>
+    <linearGradient id="navy" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e2038"/>
+      <stop offset="1" stop-color="#081426"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e6cd82"/>
+      <stop offset="0.5" stop-color="#c9a84c"/>
+      <stop offset="1" stop-color="#a9863a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Badge -->
+  <rect x="8" y="8" width="496" height="496" rx="112" fill="url(#navy)"/>
+  <rect x="30" y="30" width="452" height="452" rx="90" fill="none" stroke="url(#gold)" stroke-width="3" opacity="0.55"/>
+
+  <!-- Ascending peaks (elevation / rising) -->
+  <g fill="none" stroke="url(#gold)" stroke-width="30" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M120 356 L214 250 L286 330" opacity="0.55"/>
+    <path d="M150 372 L280 214 L392 372"/>
+  </g>
+
+  <!-- Summit star -->
+  <path fill="url(#gold)" d="M280 150
+    l14 40 l42 4 l-32 27 l11 41 l-35 -24 l-35 24 l11 -41 l-32 -27 l42 -4 z"/>
+</svg>

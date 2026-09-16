@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 260" role="img" aria-label="RISEhigHER Elevation Award">
+  <defs>
+    <linearGradient id="gold3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e6cd82"/>
+      <stop offset="0.5" stop-color="#c9a84c"/>
+      <stop offset="1" stop-color="#a9863a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Mark (no badge fill so it sits on a dark header) -->
+  <g transform="translate(20,18) scale(0.44)">
+    <rect x="30" y="30" width="452" height="452" rx="90" fill="none" stroke="url(#gold3)" stroke-width="3" opacity="0.55"/>
+    <g fill="none" stroke="url(#gold3)" stroke-width="30" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M120 356 L214 250 L286 330" opacity="0.55"/>
+      <path d="M150 372 L280 214 L392 372"/>
+    </g>
+    <path fill="url(#gold3)" d="M280 150 l14 40 l42 4 l-32 27 l11 41 l-35 -24 l-35 24 l11 -41 l-32 -27 l42 -4 z"/>
+  </g>
+
+  <g font-family="'Cormorant Garamond', Georgia, 'Times New Roman', serif">
+    <text x="285" y="138" font-size="104" font-weight="600" letter-spacing="1">
+      <tspan fill="#f5efe0">RISE</tspan><tspan fill="url(#gold3)">hig</tspan><tspan fill="#f5efe0">HER</tspan>
+    </text>
+    <text x="288" y="196" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="500"
+          letter-spacing="14" fill="#c9a84c">ELEVATION AWARD</text>
+  </g>
+</svg>

@@ -83,11 +83,8 @@ export default function AdminRestore() {
   return (
     <div className="min-h-screen bg-[#0a1628] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-lg">
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <Trophy className="h-7 w-7 text-[#c9a84c]" />
-          <span className="text-white font-semibold text-xl tracking-wide">
-            RISE<span className="text-[#c9a84c]">hig</span>HER
-          </span>
+        <div className="flex items-center justify-center mb-8">
+          <img src="/logo-on-dark.svg" alt="RISEhigHER Elevation Award" className="h-14" />
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 shadow-xl text-center">

@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
-import { Loader2, Trophy } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 type Mode = "login" | "register";
 
@@ -63,11 +63,8 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-[#0a1628] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <Trophy className="h-7 w-7 text-[#c9a84c]" />
-          <span className="text-white font-semibold text-xl tracking-wide">
-            RISE<span className="text-[#c9a84c]">hig</span>HER
-          </span>
+        <div className="flex items-center justify-center mb-8">
+          <img src="/logo-on-dark.svg" alt="RISEhigHER Elevation Award" className="h-16" />
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 shadow-xl">
